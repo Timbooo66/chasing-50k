@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="CHASING 50.000 — Timos Klimmzug-Challenge, live getrackt.">
+<title>CHASING 50.000</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --ground:#eef1f4; --surface:#fff; --surface-2:#f6f8fa; --ink:#161a20;
+    --muted:#59626f; --faint:#8a93a1; --line:#dde2e8;
+    --accent:#2f5fe0; --accent-soft:#e5ecfd;
+    --good:#147a5c; --good-soft:#dcf1ea;
+    --attn:#a8720b; --attn-soft:#fbedcf; --attn-line:#eccf8a;
+    --soll:#8a93a1; --today:#2f5fe0;
+    --shadow:0 1px 2px rgba(16,25,45,.05),0 6px 22px rgba(16,25,45,.06);
+    --radius:14px;
+  }
+  :root:not([data-theme="light"]){ @media (prefers-color-scheme:dark){
+    --ground:#101318; --surface:#191d24; --surface-2:#1f242c; --ink:#e9ecf1;
+    --muted:#a3adba; --faint:#6f7a88; --line:#2b323c;
+    --accent:#6c95ff; --accent-soft:#1b2740;
+    --good:#46c199; --good-soft:#122b24;
+    --attn:#e0ac4e; --attn-soft:#2c2413; --attn-line:#4a3d1d;
+    --soll:#6f7a88; --today:#6c95ff;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.35);
+  }}
+  :root[data-theme="dark"]{
+    --ground:#101318; --surface:#191d24; --surface-2:#1f242c; --ink:#e9ecf1;
+    --muted:#a3adba; --faint:#6f7a88; --line:#2b323c;
+    --accent:#6c95ff; --accent-soft:#1b2740;
+    --good:#46c199; --good-soft:#122b24;
+    --attn:#e0ac4e; --attn-soft:#2c2413; --attn-line:#4a3d1d;
+    --soll:#6f7a88; --today:#6c95ff;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 26px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;}
+  body{background:var(--ground); color:var(--ink); font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif; line-height:1.5; -webkit-font-smoothing:antialiased; margin:0;}
+  .wrap{max-width:860px; margin:0 auto; padding:clamp(16px,4vw,38px) clamp(13px,4vw,30px) 64px;}
+  .eyebrow{font-family:"Oswald",sans-serif; text-transform:uppercase; letter-spacing:.16em; font-size:12px; font-weight:600; color:var(--accent); display:flex; align-items:center; gap:10px;}
+  .eyebrow::before{content:""; width:24px; height:2px; background:var(--accent);}
+  h1{font-family:"Oswald",sans-serif; font-weight:700; font-size:clamp(30px,7vw,52px); line-height:.98; letter-spacing:-.01em; margin:12px 0 7px;}
+  .sub{color:var(--muted); font-size:13.5px; margin:0;}
+  .pills{display:flex; gap:9px; margin-top:14px; flex-wrap:wrap;}
+  .pill-badge{display:flex; align-items:center; gap:7px; background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:6px 13px; font-family:"IBM Plex Mono",monospace; font-size:12px; box-shadow:var(--shadow);}
+  .pill-badge b{font-weight:600;}
+  .pill-badge .k{color:var(--faint); text-transform:uppercase; letter-spacing:.04em; font-size:10px;}
+  .pill-badge.flame b{color:var(--attn);}
+
+  .bar-wrap{margin:24px 0 6px;}
+  .bar-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px; font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;}
+  .bar-top .big{font-size:25px; font-weight:600;}
+  .bar-top .big b{color:var(--accent);}
+  .bar-top .pct{font-size:13px; color:var(--muted);}
+  .track{height:18px; background:var(--surface-2); border:1px solid var(--line); border-radius:999px; overflow:hidden; position:relative;}
+  .fill{height:100%; background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 70%, #16a0c8)); border-radius:999px; transition:width .5s ease;}
+  .mstack{position:relative; height:16px; margin-top:3px;}
+  .ms{position:absolute; transform:translateX(-50%); font-family:"IBM Plex Mono",monospace; font-size:9.5px; color:var(--faint); white-space:nowrap;}
+  .ms::before{content:""; position:absolute; top:-21px; left:50%; width:1px; height:18px; background:var(--faint); opacity:.5;}
+  .soll-mark{position:absolute; top:-4px; bottom:-4px; width:2px; background:var(--soll);}
+  .track-legend{display:flex; gap:16px; margin-top:4px; font-size:11px; color:var(--faint); font-family:"IBM Plex Mono",monospace;}
+
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin:20px 0;}
+  .stat{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:13px 15px; box-shadow:var(--shadow);}
+  .stat .num{font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:22px; letter-spacing:-.01em; font-variant-numeric:tabular-nums;}
+  .stat .num.hl{color:var(--accent);}
+  .stat .lbl{font-size:11.5px; color:var(--muted); margin-top:2px;}
+  .stat .sub2{font-size:10.5px; color:var(--faint); margin-top:3px; font-family:"IBM Plex Mono",monospace;}
+
+  .verdict{border-radius:var(--radius); padding:12px 16px; font-size:13px; margin:2px 0 22px; border:1px solid transparent;}
+  .verdict.ok{background:var(--good-soft); color:var(--ink);}
+  .verdict.warn{background:var(--attn-soft); border-color:var(--attn-line); color:var(--ink);}
+  .verdict b{font-weight:600;}
+
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:17px 17px 15px; margin-bottom:20px;}
+  .card h2{font-family:"Oswald",sans-serif; font-weight:600; text-transform:uppercase; letter-spacing:.05em; font-size:15px; margin:0 0 4px;}
+  .card .cardsub{font-size:12px; color:var(--faint); margin:0 0 14px; font-family:"IBM Plex Mono",monospace;}
+
+  .records{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+  @media (max-width:520px){ .records{grid-template-columns:1fr;} }
+  .rec{background:var(--surface-2); border:1px solid var(--line); border-radius:11px; padding:12px 14px;}
+  .rec .rn{font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:20px; font-variant-numeric:tabular-nums;}
+  .rec .rl{font-size:11px; color:var(--muted); margin-top:2px;}
+  .rec .rd{font-size:10px; color:var(--faint); margin-top:2px; font-family:"IBM Plex Mono",monospace;}
+
+  .chartbox{width:100%; overflow-x:auto;}
+  svg{display:block; height:auto;}
+  .chart-legend{display:flex; gap:16px; margin-top:10px; font-size:11.5px; color:var(--muted); flex-wrap:wrap;}
+  .chart-legend span{display:flex; align-items:center; gap:7px;}
+  .swatch{width:14px; height:10px; border-radius:3px; display:inline-block;}
+  .swatch.line{height:0; border-top:2px dashed var(--soll); width:16px;}
+  .hint{font-size:12.5px; color:var(--faint); padding:14px 0; text-align:center;}
+
+  .sectitle{font-family:"Oswald",sans-serif; font-weight:600; text-transform:uppercase; letter-spacing:.05em; font-size:15px; margin:0 0 12px;}
+
+  .wk{background:var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); margin-bottom:10px; overflow:hidden;}
+  .wk.cur{border-color:var(--today); box-shadow:0 0 0 1px var(--today),var(--shadow);}
+  .wkhead{all:unset; box-sizing:border-box; display:flex; align-items:center; gap:12px; width:100%; padding:13px 15px; cursor:pointer;}
+  .wkhead:focus-visible{outline:2px solid var(--accent); outline-offset:-2px;}
+  .chev{font-size:11px; color:var(--faint); transition:transform .2s; width:12px;}
+  .wk.open .chev{transform:rotate(90deg);}
+  .wkname{font-family:"Oswald",sans-serif; font-weight:600; font-size:14px; min-width:66px;}
+  .wkname small{display:block; font-family:"IBM Plex Mono",monospace; font-size:9.5px; color:var(--faint); font-weight:400; letter-spacing:0;}
+  .mini{flex:1; height:8px; background:var(--surface-2); border-radius:999px; overflow:hidden; min-width:40px;}
+  .mini i{display:block; height:100%; border-radius:999px;}
+  .wkmeta{display:flex; align-items:center; gap:10px; font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums;}
+  .wkmeta .col{display:flex; flex-direction:column; align-items:flex-end; line-height:1.12;}
+  .wkmeta .sum{font-weight:600; font-size:15px;}
+  .wkmeta .cum{font-size:10px; color:var(--faint);}
+  .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+
+  .wkbody{padding:4px 13px 14px; border-top:1px solid var(--line);}
+  .days{display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-top:12px;}
+  @media (max-width:600px){ .days{grid-template-columns:repeat(4,1fr);} }
+  .day{background:var(--surface-2); border:1px solid var(--line); border-radius:9px; padding:7px 5px 6px; text-align:center;}
+  .day.today{border-color:var(--today); box-shadow:0 0 0 1px var(--today);}
+  .day.future{opacity:.5;}
+  .day .dn{font-family:"Oswald",sans-serif; font-weight:600; font-size:10.5px; text-transform:uppercase; color:var(--muted);}
+  .day .dd{font-size:9px; color:var(--faint); font-family:"IBM Plex Mono",monospace; margin-bottom:4px;}
+  .day input{width:100%; text-align:center; font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; -moz-appearance:textfield; border:1px solid var(--line); border-radius:6px; background:var(--surface); color:var(--ink);}
+  .day input::-webkit-outer-spin-button,.day input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .day input.rin{font-weight:600; font-size:14px; padding:4px 2px;}
+  .day input.min{font-size:10.5px; padding:3px 2px; margin-top:3px; color:var(--muted);}
+  .day input:focus{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent);}
+  .day input:disabled{opacity:1; border-color:transparent; background:transparent;}
+  .day input.min:disabled{color:var(--faint);}
+  .day.today input.rin{color:var(--accent);}
+  .day .ro{font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:14px; padding:4px 0;}
+  .day .ro .m{display:block; font-size:9.5px; color:var(--faint); font-weight:400;}
+  .lump{display:flex; align-items:center; gap:10px; margin-top:12px; font-size:12.5px; color:var(--muted); flex-wrap:wrap;}
+  .lump input{width:92px; text-align:right; font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:14px; padding:6px 8px; border:1px solid var(--line); border-radius:8px; background:var(--surface-2); color:var(--ink); font-variant-numeric:tabular-nums;}
+  .wkfoot{margin-top:11px; font-size:11.5px; color:var(--muted); font-family:"IBM Plex Mono",monospace; display:flex; gap:14px; flex-wrap:wrap;}
+  .wkfoot b{color:var(--ink); font-weight:600;}
+
+  .btn{font-family:"IBM Plex Sans",sans-serif; font-size:13px; font-weight:600; padding:9px 15px; border-radius:10px; border:1px solid var(--line); background:var(--surface-2); color:var(--ink); cursor:pointer;}
+  .btn.primary{background:var(--accent); color:#fff; border-color:transparent;}
+  .btn:active{transform:translateY(1px);}
+  .row-actions{display:flex; gap:10px; margin:6px 0 20px; flex-wrap:wrap; align-items:center;}
+  .status{font-size:11px; color:var(--faint); font-family:"IBM Plex Mono",monospace; margin-left:auto;}
+  .foot{margin-top:24px; padding-top:15px; border-top:1px solid var(--line); color:var(--faint); font-size:11px; font-family:"IBM Plex Mono",monospace;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="eyebrow">@timo_barking · Calisthenics</div>
+  <h1>CHASING <span style="color:var(--accent)">50.000</span></h1>
+  <p class="sub">50.000 Klimmzüge in 6 Monaten · Start 24.08.2026 · Ziel 24.02.2027</p>
+  <div class="pills" id="pills"></div>
+
+  <div class="bar-wrap">
+    <div class="bar-top"><span class="big"><b id="cumNum">0</b> / 50.000</span><span class="pct" id="pctTxt">0 %</span></div>
+    <div class="track"><div class="fill" id="fill" style="width:0%"></div><div class="soll-mark" id="sollMark" style="left:0%"></div></div>
+    <div class="mstack" id="mstack"></div>
+    <div class="track-legend"><span>▬ Gesamtsumme</span><span>│ Soll heute</span></div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+  <div class="verdict" id="verdict"></div>
+
+  <div class="card">
+    <h2>Rekorde</h2>
+    <p class="cardsub">deine Bestwerte in der Challenge</p>
+    <div class="records" id="records"></div>
+  </div>
+
+  <div class="card">
+    <h2>Pro Woche</h2>
+    <p class="cardsub">Soll ~1.900/Wo · grün = erreicht, gelb = drunter</p>
+    <div class="chartbox" id="chartbox"></div>
+    <div class="chart-legend">
+      <span><i class="swatch" style="background:var(--good)"></i> ≥ Soll</span>
+      <span><i class="swatch" style="background:var(--attn)"></i> &lt; Soll</span>
+      <span><i class="swatch line"></i> Soll-Linie</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Dichte · Klimmzüge pro Minute</h2>
+    <p class="cardsub">aus deinen Zeit-Einträgen · Ziel: 8 → 9 → 10/min</p>
+    <div class="chartbox" id="rpmbox"></div>
+  </div>
+
+  <h2 class="sectitle">Wochen — zum Aufklappen tippen</h2>
+  <div id="weeksWrap"></div>
+  <div class="row-actions" id="actions">
+    <button class="btn" id="editBtn">Bearbeiten</button>
+    <button class="btn primary" id="addWeek">+ nächste Woche</button>
+    <span class="status" id="status"></span>
+  </div>
+
+  <div class="foot" id="foot">Showcase · @timo_barking</div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var GOAL=50000;
+  var START=new Date("2026-08-24T00:00:00");
+  var DEADLINE=new Date("2027-02-24T00:00:00");
+  var DAY=864e5;
+  var WEEKS_TOTAL=(DEADLINE-START)/(7*DAY);
+  var SOLL_WK=GOAL/WEEKS_TOTAL;
+  var PAST=8;
+  var DOW=["Mo","Di","Mi","Do","Fr","Sa","So"];
+  var MILES=[10000,25000,50000];
+
+  var state={
+    pastWeeks:[2000,2000,2000,2000,2000,1750,1650,1600],
+    days:{"2026-10-23":{r:600,m:0},"2026-10-25":{r:1000,m:0}},
+    futureWeeks:0
+  };
+  var open={}, editable=false, saveTimer=null, animated=false, CODE="";
+
+  function fmt(n){ return Math.round(n).toLocaleString("de-DE"); }
+  function iso(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+  function dmy(d){ return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0"); }
+  function monday(w){ var d=new Date(START); d.setDate(d.getDate()+(w-1)*7); return d; }
+  function todayDate(){ var d=new Date(); d.setHours(0,0,0,0); return d; }
+  function weekOf(d){ return Math.floor((d-START)/(7*DAY))+1; }
+  function daysElapsed(){ return Math.max(1, Math.round((todayDate()-START)/DAY)+1); }
+
+  function normDays(o){ var out={}; for(var k in o){ var v=o[k]; if(v==null) continue; if(typeof v==="number") out[k]={r:v,m:0}; else out[k]={r:Number(v.r)||0,m:Number(v.m)||0}; } return out; }
+  function dayObj(k){ var v=state.days[k]; return v?{r:Number(v.r)||0,m:Number(v.m)||0}:{r:0,m:0}; }
+
+  function weekDayKeys(w){ var m=monday(w),a=[]; for(var i=0;i<7;i++){ var d=new Date(m); d.setDate(d.getDate()+i); a.push({key:iso(d),date:d,i:i}); } return a; }
+  function weekDayReps(w){ var s=0,k=weekDayKeys(w); for(var j=0;j<7;j++) s+=dayObj(k[j].key).r; return s; }
+  function weekHasDays(w){ var k=weekDayKeys(w); for(var j=0;j<7;j++){ var o=dayObj(k[j].key); if(o.r>0||o.m>0) return true; } return false; }
+  function weekTotal(w){ if(weekHasDays(w)) return weekDayReps(w); if(w<=PAST) return Number(state.pastWeeks[w-1])||0; return 0; }
+  function weekTime(w){ var s=0,k=weekDayKeys(w); for(var j=0;j<7;j++) s+=dayObj(k[j].key).m; return s; }
+  function lastWeek(){
+    var cur=Math.max(PAST+1, weekOf(todayDate())), maxData=PAST+1;
+    for(var k in state.days){ var w=weekOf(new Date(k+"T00:00:00")); if(w>maxData) maxData=w; }
+    return Math.max(cur,maxData)+(state.futureWeeks||0);
+  }
+  function grand(){ var lw=lastWeek(),g=0; for(var w=1;w<=lw;w++) g+=weekTotal(w); return g; }
+
+  function streak(){
+    var d=todayDate(), n=0;
+    if(dayObj(iso(d)).r<=0) d=new Date(d-DAY); // if today empty, start yesterday
+    while(dayObj(iso(d)).r>0){ n++; d=new Date(d-DAY); if(d<START) break; }
+    return n;
+  }
+  function records(){
+    var bD=0,bDk=null,bRpm=0,bRpmk=null;
+    for(var k in state.days){ var o=dayObj(k); if(o.r>bD){bD=o.r;bDk=k;} if(o.m>0&&o.r/o.m>bRpm){bRpm=o.r/o.m;bRpmk=k;} }
+    var lw=lastWeek(),bW=0,bWw=0;
+    for(var w=1;w<=lw;w++){ var t=weekTotal(w); if(t>bW){bW=t;bWw=w;} }
+    return {bestDay:bD,bestDayK:bDk,bestWeek:bW,bestWeekW:bWw,bestRpm:bRpm,bestRpmK:bRpmk};
+  }
+
+  function compute(){
+    var g=grand(), de=daysElapsed();
+    var perDay=g/de, perWeek=perDay*7, pct=g/GOAL;
+    var weeksEl=Math.min(WEEKS_TOTAL, de/7), sollNow=GOAL*(weeksEl/WEEKS_TOTAL);
+    var rem=Math.max(0,GOAL-g), wl=Math.max(0,(DEADLINE-Date.now())/(7*DAY));
+    var daysLeft=Math.max(0,Math.ceil((DEADLINE-todayDate())/DAY));
+    var need=wl>0?rem/wl:rem, fw=perWeek>0?rem/perWeek:Infinity;
+    var fd=isFinite(fw)?new Date(Date.now()+fw*7*DAY):null;
+    return {g:g,perDay:perDay,perWeek:perWeek,pct:pct,sollNow:sollNow,rem:rem,wl:wl,daysLeft:daysLeft,need:need,fd:fd,onTime:fd&&fd<=DEADLINE};
+  }
+
+  function animateNum(el,to){
+    var from=0,t0=null,dur=850;
+    function step(ts){ if(!t0)t0=ts; var p=Math.min(1,(ts-t0)/dur); var e=1-Math.pow(1-p,3); el.textContent=fmt(from+(to-from)*e); if(p<1) requestAnimationFrame(step); else el.textContent=fmt(to); }
+    requestAnimationFrame(step);
+  }
+
+  function renderHeadline(c){
+    var cn=document.getElementById("cumNum");
+    if(!animated){ animated=true; animateNum(cn,c.g); } else cn.textContent=fmt(c.g);
+    document.getElementById("pctTxt").textContent=(c.pct*100).toFixed(1)+" %";
+    document.getElementById("fill").style.width=Math.min(100,c.pct*100).toFixed(1)+"%";
+    document.getElementById("sollMark").style.left=Math.min(100,(c.sollNow/GOAL)*100).toFixed(1)+"%";
+    document.getElementById("mstack").innerHTML=MILES.map(function(m){ return '<span class="ms" style="left:'+(m/GOAL*100)+'%">'+(m/1000)+'k</span>'; }).join("");
+
+    document.getElementById("pills").innerHTML=
+      '<span class="pill-badge flame"><span class="k">Streak</span> <b>'+streak()+' Tage</b></span>'+
+      '<span class="pill-badge"><span class="k">bis Ziel</span> <b>'+c.daysLeft+' Tage</b></span>'+
+      '<span class="pill-badge"><span class="k">Fortschritt</span> <b>'+(c.pct*100).toFixed(1)+' %</b></span>';
+
+    var st=[
+      {n:fmt(c.perWeek),l:"Ø pro Woche",s:"nötig: "+fmt(c.need)+"/Wo",hl:true},
+      {n:fmt(c.perDay),l:"Ø pro Tag",s:""},
+      {n:fmt(c.rem),l:"noch offen",s:fmt(c.wl)+" Wo Zeit"},
+      {n:c.fd?c.fd.toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"2-digit"}):"—",l:"Prognose fertig",s:c.onTime?"pünktlich":"zu spät"}
+    ];
+    document.getElementById("stats").innerHTML=st.map(function(s){
+      return '<div class="stat"><div class="num'+(s.hl?' hl':'')+'">'+s.n+'</div><div class="lbl">'+s.l+'</div>'+(s.s?'<div class="sub2">'+s.s+'</div>':'')+'</div>';
+    }).join("");
+    var v=document.getElementById("verdict");
+    if(c.onTime){ v.className="verdict ok"; v.innerHTML="<b>Auf Kurs.</b> Bei "+fmt(c.perWeek)+"/Woche fällt die 50.000 rechtzeitig. Puffer knapp — Linie halten."; }
+    else { v.className="verdict warn"; v.innerHTML="<b>Leicht hinter dem Soll.</b> Bei "+fmt(c.perWeek)+"/Woche wird's nach der Deadline. Nötig: ~"+fmt(c.need)+"/Woche."; }
+
+    var r=records(), rc=[
+      {n:r.bestDay?fmt(r.bestDay):"—",l:"Bester Tag",d:r.bestDayK?dmy(new Date(r.bestDayK+"T00:00:00")):""},
+      {n:r.bestWeek?fmt(r.bestWeek):"—",l:"Beste Woche",d:r.bestWeekW?"Wo "+r.bestWeekW:""},
+      {n:r.bestRpm?r.bestRpm.toFixed(1)+"/min":"—",l:"Beste Dichte",d:r.bestRpmK?dmy(new Date(r.bestRpmK+"T00:00:00")):"Zeit eintragen"}
+    ];
+    document.getElementById("records").innerHTML=rc.map(function(x){
+      return '<div class="rec"><div class="rn">'+x.n+'</div><div class="rl">'+x.l+'</div>'+(x.d?'<div class="rd">'+x.d+'</div>':'')+'</div>';
+    }).join("");
+  }
+
+  function renderChart(){
+    var lw=lastWeek(), totals=[];
+    for(var w=1;w<=lw;w++) totals.push(weekTotal(w));
+    var maxV=Math.max(2400, Math.max.apply(null,totals.concat([0])));
+    var bw=26, gap=8, padL=8, padR=8, padT=16, padB=22;
+    var W=Math.max(560, padL+padR+lw*(bw+gap)), H=230, ih=H-padT-padB;
+    var y=function(v){ return padT+ih-(v/maxV)*ih; };
+    var g="", sy=y(SOLL_WK);
+    g+='<line x1="'+padL+'" y1="'+sy+'" x2="'+(W-padR)+'" y2="'+sy+'" stroke="var(--soll)" stroke-width="2" stroke-dasharray="5 5"/>';
+    g+='<text x="'+(W-padR)+'" y="'+(sy-5)+'" text-anchor="end" font-size="10" fill="var(--soll)" font-family="IBM Plex Mono,monospace">Soll '+fmt(SOLL_WK)+'</text>';
+    for(var i=0;i<totals.length;i++){
+      var x=padL+i*(bw+gap), t=totals[i], bh=Math.max(0,(t/maxV)*ih), by=padT+ih-bh;
+      var col=(t>=SOLL_WK)?"var(--good)":(t>0?"var(--attn)":"var(--line)");
+      g+='<rect x="'+x+'" y="'+by.toFixed(1)+'" width="'+bw+'" height="'+bh.toFixed(1)+'" rx="4" fill="'+col+'"/>';
+      if(t>0) g+='<text x="'+(x+bw/2)+'" y="'+(by-4).toFixed(1)+'" text-anchor="middle" font-size="9" fill="var(--muted)" font-family="IBM Plex Mono,monospace">'+(t>=1000?(t/1000).toFixed(1).replace(".0","")+"k":t)+'</text>';
+      g+='<text x="'+(x+bw/2)+'" y="'+(H-7)+'" text-anchor="middle" font-size="9.5" fill="var(--faint)" font-family="IBM Plex Mono,monospace">'+(i+1)+'</text>';
+    }
+    document.getElementById("chartbox").innerHTML='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" style="max-width:none" role="img" aria-label="Klimmzüge pro Woche">'+g+'</svg>';
+  }
+
+  function renderRpm(){
+    var pts=[];
+    for(var k in state.days){ var o=dayObj(k); if(o.m>0&&o.r>0) pts.push({d:new Date(k+"T00:00:00"),v:o.r/o.m}); }
+    pts.sort(function(a,b){ return a.d-b.d; });
+    var box=document.getElementById("rpmbox");
+    if(pts.length<2){ box.innerHTML='<div class="hint">Noch zu wenig Zeit-Daten. Trag bei den Tagen die Minuten ein — dann erscheint hier deine Dichte-Kurve (Klimmzüge/Minute).</div>'; return; }
+    var W=Math.max(520,pts.length*60), H=190, padL=36,padR=14,padT=16,padB=26, iw=W-padL-padR, ih=H-padT-padB;
+    var vals=pts.map(function(p){return p.v;}), maxv=Math.max.apply(null,vals.concat([10])), minv=Math.min.apply(null,vals.concat([6]));
+    maxv=Math.ceil(maxv); minv=Math.floor(Math.min(minv,6));
+    var x=function(i){ return padL+(pts.length===1?iw/2:(i/(pts.length-1))*iw); };
+    var y=function(v){ return padT+ih-((v-minv)/(maxv-minv||1))*ih; };
+    var g="";
+    for(var gv=minv; gv<=maxv; gv++){ var yy=y(gv); g+='<line x1="'+padL+'" y1="'+yy+'" x2="'+(W-padR)+'" y2="'+yy+'" stroke="var(--line)" stroke-width="1"/>'; g+='<text x="'+(padL-6)+'" y="'+(yy+3)+'" text-anchor="end" font-size="9.5" fill="var(--faint)" font-family="IBM Plex Mono,monospace">'+gv+'</text>'; }
+    var d=pts.map(function(p,i){ return (i?'L':'M')+x(i).toFixed(1)+' '+y(p.v).toFixed(1); }).join(' ');
+    g+='<path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>';
+    pts.forEach(function(p,i){ g+='<circle cx="'+x(i).toFixed(1)+'" cy="'+y(p.v).toFixed(1)+'" r="3.5" fill="var(--accent)"/>'; g+='<text x="'+x(i).toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle" font-size="9" fill="var(--faint)" font-family="IBM Plex Mono,monospace">'+dmy(p.d)+'</text>'; });
+    box.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" style="max-width:none" role="img" aria-label="Klimmzüge pro Minute">'+g+'</svg>';
+  }
+
+  function renderWeeks(){
+    var lw=lastWeek(), curW=weekOf(todayDate()), td=iso(todayDate()), tdd=todayDate(), html="", cum=0;
+    var dis=editable?"":" disabled";
+    for(var w=1;w<=lw;w++){
+      var tot=weekTotal(w), tm=weekTime(w), isCur=(w===curW), isOpen=!!open[w];
+      cum+=tot;
+      var m=monday(w), mEnd=new Date(m); mEnd.setDate(mEnd.getDate()+6);
+      var range=dmy(m)+"–"+dmy(mEnd);
+      var col=(tot>=SOLL_WK)?"var(--good)":(tot>0?"var(--attn)":"var(--faint)");
+      var barw=Math.min(100,(tot/Math.max(2400,SOLL_WK*1.3))*100);
+      var body="";
+      if(isOpen){
+        var cells="", hasDays=weekHasDays(w), keys=weekDayKeys(w);
+        for(var j=0;j<7;j++){
+          var key=keys[j].key, dd=keys[j].date, o=dayObj(key);
+          var cls="day"+(key===td?" today":"")+(dd>tdd?" future":"");
+          if(editable){
+            cells+='<div class="'+cls+'"><div class="dn">'+DOW[j]+'</div><div class="dd">'+dmy(dd)+'</div>'+
+                   '<input class="rin" type="number" inputmode="numeric" min="0" step="5" data-day="'+key+'" data-f="r" value="'+(o.r||"")+'" placeholder="0">'+
+                   '<input class="min" type="number" inputmode="numeric" min="0" step="1" data-day="'+key+'" data-f="m" value="'+(o.m||"")+'" placeholder="min"></div>';
+          } else {
+            cells+='<div class="'+cls+'"><div class="dn">'+DOW[j]+'</div><div class="dd">'+dmy(dd)+'</div>'+
+                   '<div class="ro">'+(o.r||0)+(o.m>0?'<span class="m">'+o.m+' min</span>':'')+'</div></div>';
+          }
+        }
+        var lump="";
+        if(w<=PAST && !hasDays && editable){
+          lump='<div class="lump">Nur Wochensumme: <input type="number" inputmode="numeric" min="0" step="50" data-pw="'+(w-1)+'" value="'+(Number(state.pastWeeks[w-1])||0)+'"> <span>— oder Tage eintragen</span></div>';
+        }
+        var rpm = tm>0 ? (tot/tm).toFixed(1)+"/min" : "– /min";
+        body='<div class="wkbody">'+lump+'<div class="days">'+cells+'</div>'+
+             '<div class="wkfoot"><span>Woche: <b>'+fmt(tot)+'</b></span><span>Gesamt bis hier: <b>'+fmt(cum)+'</b></span><span>Zeit: <b>'+(tm||0)+'</b> min</span><span>Schnitt: <b>'+rpm+'</b></span></div></div>';
+      }
+      html+='<div class="wk'+(isCur?' cur':'')+(isOpen?' open':'')+'">'+
+        '<button class="wkhead" data-w="'+w+'" aria-expanded="'+isOpen+'">'+
+          '<span class="chev">▸</span>'+
+          '<span class="wkname">'+(isCur?"Diese Wo":"Wo "+w)+'<small>'+range+'</small></span>'+
+          '<span class="mini"><i style="width:'+barw.toFixed(0)+'%;background:'+col+'"></i></span>'+
+          '<span class="wkmeta"><span class="dot" style="background:'+col+'"></span><span class="col"><span class="sum" id="wsum'+w+'">'+fmt(tot)+'</span><span class="cum" id="wcum'+w+'">Σ '+fmt(cum)+'</span></span></span>'+
+        '</button>'+body+'</div>';
+    }
+    document.getElementById("weeksWrap").innerHTML=html;
+    document.getElementById("addWeek").style.display=editable?"inline-block":"none";
+    document.getElementById("editBtn").textContent=editable?"Bearbeiten aktiv ✓":"Bearbeiten";
+  }
+
+  function updateHeaders(){
+    var lw=lastWeek(), cum=0;
+    for(var w=1;w<=lw;w++){ var tot=weekTotal(w); cum+=tot;
+      var el=document.getElementById("wsum"+w); if(el) el.textContent=fmt(tot);
+      var cl=document.getElementById("wcum"+w); if(cl) cl.textContent="Σ "+fmt(cum);
+    }
+  }
+
+  function renderAll(){ var c=compute(); renderHeadline(c); renderChart(); renderRpm(); renderWeeks(); }
+  function refreshLive(){ var c=compute(); renderHeadline(c); renderChart(); renderRpm(); updateHeaders(); }
+  function setStatus(t){ document.getElementById("status").textContent=t||""; }
+
+  function scheduleSave(){
+    if(!editable) return;
+    if(saveTimer) clearTimeout(saveTimer);
+    saveTimer=setTimeout(function(){
+      setStatus("speichert …");
+      fetch("/api/data",{method:"POST",headers:{"content-type":"application/json","x-edit-code":CODE||""},body:JSON.stringify({pastWeeks:state.pastWeeks.map(Number),days:state.days,futureWeeks:state.futureWeeks||0})}).then(function(r){
+        if(r.status===403){ editable=false; CODE=""; try{localStorage.removeItem("ec");}catch(e){} renderAll(); setStatus("Code falsch — nur Ansicht"); return; }
+        if(!r.ok){ setStatus("Fehler "+r.status); return; }
+        setStatus("gespeichert "+new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}));
+      }).catch(function(){ setStatus("offline?"); });
+    },700);
+  }
+
+  document.getElementById("weeksWrap").addEventListener("click",function(e){
+    var b=e.target.closest(".wkhead"); if(!b) return;
+    var w=+b.getAttribute("data-w"); open[w]=!open[w]; renderWeeks();
+  });
+
+  document.addEventListener("input",function(e){
+    if(!editable) return;
+    var t=e.target;
+    if(t.hasAttribute&&t.hasAttribute("data-day")){
+      var k=t.getAttribute("data-day"), f=t.getAttribute("data-f");
+      var o=dayObj(k); o[f]=Math.max(0,Math.floor(Number(t.value)||0));
+      if(o.r<=0&&o.m<=0) delete state.days[k]; else state.days[k]=o;
+      refreshLive(); scheduleSave();
+    } else if(t.hasAttribute&&t.hasAttribute("data-pw")){
+      var i=+t.getAttribute("data-pw"); state.pastWeeks[i]=Math.max(0,Math.floor(Number(t.value)||0));
+      refreshLive(); scheduleSave();
+    }
+  });
+
+  document.getElementById("addWeek").addEventListener("click",function(){
+    if(!editable) return;
+    state.futureWeeks=(state.futureWeeks||0)+1; open[lastWeek()]=true; renderAll(); scheduleSave();
+  });
+
+  try{ CODE=localStorage.getItem("ec")||""; }catch(e){}
+  editable=!!CODE;
+  open[weekOf(todayDate())]=true;
+  renderAll();
+  setFoot();
+
+  function setFoot(){ document.getElementById("foot").textContent=editable?"Bearbeiten-Modus aktiv · Änderungen werden gespeichert.":"Showcase · @timo_barking · nur Ansicht"; }
+
+  function loadData(){
+    fetch("/api/data",{cache:"no-store"}).then(function(r){return r.json();}).then(function(x){
+      if(x&&typeof x==="object"){
+        if(Array.isArray(x.pastWeeks)&&x.pastWeeks.length) state.pastWeeks=x.pastWeeks.map(Number);
+        if(x.days&&typeof x.days==="object"&&!Array.isArray(x.days)) state.days=normDays(x.days);
+        if(typeof x.futureWeeks==="number") state.futureWeeks=x.futureWeeks;
+      }
+      var ae=document.activeElement;
+      if(ae&&ae.tagName==="INPUT"){ refreshLive(); } else { renderAll(); }
+    }).catch(function(){ renderAll(); });
+  }
+  loadData();
+
+  document.getElementById("editBtn").addEventListener("click",function(){
+    if(editable){ editable=false; CODE=""; try{localStorage.removeItem("ec");}catch(e){} renderAll(); setFoot(); setStatus("Ansicht"); return; }
+    var c=prompt("Bearbeiten-Code eingeben:");
+    if(c){ CODE=c; try{localStorage.setItem("ec",c);}catch(e){} editable=true; renderAll(); setFoot(); setStatus("Bearbeiten aktiv — tippe eine Zahl ein"); }
+  });
+})();
+</script>
+</body>
+</html>
